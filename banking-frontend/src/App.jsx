@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import UserForm from './UserForm';
+import Login from './Login';
+import AdminPanel from './AdminPanel';
 import './App.css';
 
 function App() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [token, setToken] = useState(null);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -49,6 +52,14 @@ function App() {
             ))}
           </ul>
         )
+      )}
+
+      <hr style={{ margin: '2rem 0' }} />
+
+      {token ? (
+        <AdminPanel token={token} />
+      ) : (
+        <Login onLogin={setToken} />
       )}
     </div>
   );

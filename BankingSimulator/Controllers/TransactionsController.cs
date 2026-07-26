@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BankingSimulator.Data;
+using BankingSimulator.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BankingSimulator.Data;
-using BankingSimulator.Models;
 
 namespace BankingSimulator.Controllers
 {
+   
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class TransactionsController : ControllerBase
     {
@@ -134,6 +137,51 @@ namespace BankingSimulator.Controllers
             return Ok(new { outgoing, incoming, flagged = isFlagged });
         }
 
+
+        // GET: api/transactions/flagged
+        [HttpGet("flagged")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetFlagged()
+        {
+            return await _context.Transactions
+                .Where(t => t.Status == "Flagged")
+                .OrderByDescending(t => t.Timestamp)
+                .ToListAsync();
+        }
+
+        // PUT: api/transactions/5/review
+        [HttpPut("{id}/review")]
+        public async Task<ActionResult> ReviewTransaction(int id, [FromQuery] string decision)
+        {
+            var transaction = await _context.Transactions.FindAsync(id);
+
+            if (transaction == null)
+                return NotFound("Transaction not found.");
+
+            if (decision != "Approve" && decision != "Block")
+                return BadRequest("Decision must be 'Approve' or 'Block'.");
+
+            if (decision == "Approve")
+            {
+                transaction.Status = "Completed";
+            }
+            else // Block
+            {
+                transaction.Status = "Blocked";
+
+                // Reverse the transaction's effect on the account balance
+                var account = await _context.Accounts.FindAsync(transaction.AccountId);
+                if (account != null)
+                {
+                    if (transaction.Type == "Deposit" || transaction.Type == "Transfer-In")
+                        account.Balance -= transaction.Amount;
+                    else if (transaction.Type == "Withdraw" || transaction.Type == "Transfer-Out")
+                        account.Balance += transaction.Amount;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(transaction);
+        }
 
 
 
