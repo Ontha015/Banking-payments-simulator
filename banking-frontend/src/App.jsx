@@ -32,35 +32,42 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>Banking Simulator</h1>
+    <div className="app">
+      <div className="app-header">
+        <h1>Banking Simulator</h1>
+        <span className="tag">Ledger v1.0</span>
+      </div>
 
-      <UserForm onUserCreated={fetchUsers} />
+      <div className="panel">
+        <span className="panel-eyebrow">Registration</span>
+        <UserForm onUserCreated={fetchUsers} />
+      </div>
 
-      <h2>Users</h2>
-      {loading && <p>Loading users...</p>}
-      {error && <p>Error: {error}</p>}
-      {!loading && !error && (
-        users.length === 0 ? (
-          <p>No users found.</p>
-        ) : (
-          <ul>
-            {users.map((user) => (
-              <li key={user.id}>
-                {user.fullName} — {user.email}
-              </li>
-            ))}
-          </ul>
-        )
-      )}
+      <div className="panel">
+        <span className="panel-eyebrow">Directory</span>
+        <h2>Users</h2>
+        {loading && <p className="empty-state">Loading users…</p>}
+        {error && <p className="message error">{error}</p>}
+        {!loading && !error && (
+          users.length === 0 ? (
+            <p className="empty-state">No users yet.</p>
+          ) : (
+            <ul className="user-list">
+              {users.map((user) => (
+                <li key={user.id}>
+                  <span>{user.fullName}</span>
+                  <span className="email">{user.email}</span>
+                </li>
+              ))}
+            </ul>
+          )
+        )}
+      </div>
 
-      <hr style={{ margin: '2rem 0' }} />
-
-      {token ? (
-        <AdminPanel token={token} />
-      ) : (
-        <Login onLogin={setToken} />
-      )}
+      <div className="panel">
+        <span className="panel-eyebrow">Fraud Review</span>
+        {token ? <AdminPanel token={token} /> : <Login onLogin={setToken} />}
+      </div>
     </div>
   );
 }

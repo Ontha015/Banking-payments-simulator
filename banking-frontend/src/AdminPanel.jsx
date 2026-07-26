@@ -47,32 +47,32 @@ function AdminPanel({ token }) {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Account ID</th>
-              <th>Timestamp</th>
-              <th>Actions</th>
+    <th>Type</th>
+    <th>Amount</th>
+    <th>Account</th>
+    <th>Status</th>
+    <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {flagged.map((t) => (
-              <tr key={t.id}>
-                <td>{t.id}</td>
-                <td>{t.type}</td>
-                <td>{t.amount}</td>
-                <td>{t.accountId}</td>
-                <td>{new Date(t.timestamp).toLocaleString()}</td>
-                <td>
-                  <button onClick={() => handleReview(t.id, 'Approve')}>
-                    Approve
-                  </button>{' '}
-                  <button onClick={() => handleReview(t.id, 'Block')}>
-                    Block
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {flagged.map((t) => (
+    <tr key={t.id}>
+      <td>#{t.id}</td>
+      <td>{t.type}</td>
+      <td>R{t.amount.toFixed(2)}</td>
+      <td>{t.accountId}</td>
+      <td><span className="stamp flagged">Flagged</span></td>
+      <td>
+        <button className="approve" onClick={() => handleReview(t.id, 'Approve')}>
+          Approve
+        </button>{' '}
+        <button className="block" onClick={() => handleReview(t.id, 'Block')}>
+          Block
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
         </table>
       )}
     </div>
