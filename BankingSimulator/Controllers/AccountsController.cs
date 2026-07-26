@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BankingSimulator.Data;
 using BankingSimulator.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BankingSimulator.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase

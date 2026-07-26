@@ -40,6 +40,8 @@ namespace BankingSimulator.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> CreateUser(User user)
         {
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

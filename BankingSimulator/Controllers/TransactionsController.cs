@@ -84,5 +84,58 @@ namespace BankingSimulator.Controllers
             return Ok(transaction);
         }
 
+        // POST: api/transactions/transfer
+        [HttpPost("transfer")]
+        public async Task<ActionResult> Transfer(int fromAccountId, int toAccountId, decimal amount)
+        {
+            if (amount <= 0)
+                return BadRequest("Amount must be greater than zero.");
+
+            if (fromAccountId == toAccountId)
+                return BadRequest("Cannot transfer to the same account.");
+
+            var fromAccount = await _context.Accounts.FindAsync(fromAccountId);
+            var toAccount = await _context.Accounts.FindAsync(toAccountId);
+
+            if (fromAccount == null || toAccount == null)
+                return NotFound("One or both accounts not found.");
+
+            if (fromAccount.Balance < amount)
+                return BadRequest("Insufficient funds.");
+
+            // Fraud check: transfer exceeds 80% of sender's balance
+            bool isFlagged = amount > (fromAccount.Balance * 0.8m);
+
+            fromAccount.Balance -= amount;
+            toAccount.Balance += amount;
+
+            var outgoing = new Transaction
+            {
+                Type = "Transfer-Out",
+                Amount = amount,
+                BalanceAfter = fromAccount.Balance,
+                AccountId = fromAccountId,
+                Status = isFlagged ? "Flagged" : "Completed"
+            };
+
+            var incoming = new Transaction
+            {
+                Type = "Transfer-In",
+                Amount = amount,
+                BalanceAfter = toAccount.Balance,
+                AccountId = toAccountId,
+                Status = "Completed"
+            };
+
+            _context.Transactions.Add(outgoing);
+            _context.Transactions.Add(incoming);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { outgoing, incoming, flagged = isFlagged });
+        }
+
+
+
+
     }
 }
