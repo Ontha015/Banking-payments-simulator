@@ -26,25 +26,30 @@ function Login({ onLogin }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-      <h3>Admin Login</h3>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Log In</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-    </form>
+    <div>
+      <div className="icon-badge">🏦</div>
+      <h2 className="form-title">Welcome Back</h2>
+      <p className="form-subtitle">Log in to review flagged transactions</p>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+        {error && <p className="message error">{error}</p>}
+      </form>
+    </div>
   );
 }
 
